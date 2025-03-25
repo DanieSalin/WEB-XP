@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if form.instance.pk %}Chỉnh sửa thông tin người giữ vé{% else %}Thêm người giữ vé mới{% endif %} - Hệ thống đặt vé xem phim
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{% if form.instance.pk %}Chỉnh sửa thông tin người giữ vé{% else %}Thêm người giữ vé mới{% endif %}</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'ticket_holder_list' %}" class="btn btn-secondary">Quay lại danh sách</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Thông tin người giữ vé</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" class="form">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="mb-3">
+                <label for="{{ form.name.id_for_label }}" class="form-label">Họ và tên</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <div class="text-danger">
+                    {% for error in form.name.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.age.id_for_label }}" class="form-label">Tuổi</label>
+                {{ form.age }}
+                {% if form.age.errors %}
+                <div class="text-danger">
+                    {% for error in form.age.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.type.id_for_label }}" class="form-label">Loại khách</label>
+                {{ form.type }}
+                {% if form.type.errors %}
+                <div class="text-danger">
+                    {% for error in form.type.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.ticket.id_for_label }}" class="form-label">Vé</label>
+                {{ form.ticket }}
+                {% if form.ticket.errors %}
+                <div class="text-danger">
+                    {% for error in form.ticket.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

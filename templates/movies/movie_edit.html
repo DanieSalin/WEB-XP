@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if form.instance.pk %}Chỉnh sửa phim{% else %}Thêm phim mới{% endif %} - Hệ thống đặt vé xem phim
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{% if form.instance.pk %}Chỉnh sửa phim{% else %}Thêm phim mới{% endif %}</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'movie_list' %}" class="btn btn-secondary">Quay lại danh sách</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Thông tin phim</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" class="form" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label">Tên phim</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="text-danger">
+                    {% for error in form.title.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.director.id_for_label }}" class="form-label">Đạo diễn</label>
+                {{ form.director }}
+                {% if form.director.errors %}
+                <div class="text-danger">
+                    {% for error in form.director.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.producer.id_for_label }}" class="form-label">Nhà sản xuất</label>
+                {{ form.producer }}
+                {% if form.producer.errors %}
+                <div class="text-danger">
+                    {% for error in form.producer.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.duration.id_for_label }}" class="form-label">Thời lượng (phút)</label>
+                {{ form.duration }}
+                {% if form.duration.errors %}
+                <div class="text-danger">
+                    {% for error in form.duration.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.genre.id_for_label }}" class="form-label">Thể loại</label>
+                {{ form.genre }}
+                {% if form.genre.errors %}
+                <div class="text-danger">
+                    {% for error in form.genre.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label">Mô tả phim</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <div class="text-danger">
+                    {% for error in form.description.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.image.id_for_label }}" class="form-label">Hình ảnh phim</label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                <div class="text-danger">
+                    {% for error in form.image.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if form.instance.image %}
+                <div class="mt-2">
+                    <p>Hình ảnh hiện tại:</p>
+                    <img src="{{ form.instance.image.url }}" alt="{{ form.instance.title }}" class="img-fluid" style="max-height: 200px;">
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

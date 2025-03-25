@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Chi tiết người giữ vé - {{ ticket_holder.name }} - Hệ thống đặt vé xem phim{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Chi tiết người giữ vé</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'ticket_holder_list' %}" class="btn btn-secondary">Quay lại danh sách</a>
+        {% if user.is_authenticated and user == ticket_holder.user or user.is_staff %}
+        <a href="{% url 'ticket_holder_edit' pk=ticket_holder.pk %}" class="btn btn-primary">Sửa</a>
+        <a href="{% url 'ticket_holder_delete' pk=ticket_holder.pk %}" class="btn btn-danger">Xóa</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Thông tin người giữ vé</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Họ và tên:</strong> {{ ticket_holder.name }}</p>
+                <p><strong>Tuổi:</strong> {{ ticket_holder.age }}</p>
+                <p><strong>Loại khách:</strong> {{ ticket_holder.get_type_display }}</p>
+                {% if ticket_holder.user %}
+                <p><strong>Tài khoản đặt vé:</strong> {{ ticket_holder.user.username }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h3 class="mb-0">Thông tin vé</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Phim:</strong> {{ ticket_holder.ticket.movie.title }}</p>
+                <p><strong>Đạo diễn:</strong> {{ ticket_holder.ticket.movie.director }}</p>
+                <p><strong>Thể loại:</strong> {{ ticket_holder.ticket.movie.genre }}</p>
+                <p><strong>Thời lượng:</strong> {{ ticket_holder.ticket.movie.duration }} phút</p>
+                <p><strong>Suất chiếu:</strong> {{ ticket_holder.ticket.showtime|date:"d/m/Y H:i" }}</p>
+                <p><strong>Giá vé:</strong> {{ ticket_holder.ticket.price }} VNĐ</p>
+                <p><strong>Loại vé:</strong> {{ ticket_holder.ticket.get_type_display }}</p>
+                <a href="{% url 'ticket_detail' pk=ticket_holder.ticket.pk %}" class="btn btn-info">Xem chi tiết vé</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} 

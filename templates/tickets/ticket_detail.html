@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Chi tiết vé - {{ ticket.movie.title }} - Hệ thống đặt vé xem phim{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Chi tiết vé</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'ticket_list' %}" class="btn btn-secondary">Quay lại danh sách</a>
+        {% if user.is_staff %}
+        <a href="{% url 'ticket_edit' pk=ticket.pk %}" class="btn btn-primary">Sửa</a>
+        <a href="{% url 'ticket_delete' pk=ticket.pk %}" class="btn btn-danger">Xóa</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">{{ ticket.movie.title }}</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Đạo diễn:</strong> {{ ticket.movie.director }}</p>
+                <p><strong>Nhà sản xuất:</strong> {{ ticket.movie.producer }}</p>
+                <p><strong>Thời lượng:</strong> {{ ticket.movie.duration }} phút</p>
+                <p><strong>Thể loại:</strong> {{ ticket.movie.genre }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Suất chiếu:</strong> {{ ticket.showtime|date:"d/m/Y H:i" }}</p>
+                <p><strong>Giá vé:</strong> {{ ticket.price }} VNĐ</p>
+                <p><strong>Loại vé:</strong> {{ ticket.get_type_display }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h3>Đặt vé</h3>
+    </div>
+    <div class="card-body">
+        <a href="{% url 'ticket_holder_new_for_ticket' ticket_id=ticket.pk %}" class="btn btn-success">Đặt vé ngay</a>
+    </div>
+</div>
+{% endif %}
+
+{% if ticket.ticketholder %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h3>Thông tin người giữ vé</h3>
+    </div>
+    <div class="card-body">
+        <p><strong>Tên:</strong> {{ ticket.ticketholder.name }}</p>
+        <p><strong>Loại:</strong> {{ ticket.ticketholder.get_type_display }}</p>
+        <p><strong>Tuổi:</strong> {{ ticket.ticketholder.age }}</p>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %} 

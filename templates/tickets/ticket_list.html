@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Danh sách vé - Hệ thống đặt vé xem phim{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-ticket-alt text-primary me-2"></i>Danh sách vé</h1>
+    </div>
+    {% if user.is_staff %}
+    <div class="col-md-4 text-end">
+        <a href="{% url 'ticket_new' %}" class="btn btn-primary"><i class="fas fa-plus-circle me-1"></i>Thêm vé mới</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Form tìm kiếm -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-search me-2"></i>Tìm kiếm vé</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" action="{% url 'ticket_list' %}" class="row g-3">
+            <!-- Tìm kiếm theo phim -->
+            <div class="col-md-4">
+                <label for="movie" class="form-label">Phim</label>
+                <select class="form-select" id="movie" name="movie">
+                    <option value="">Tất cả phim</option>
+                    {% for movie in movies %}
+                    <option value="{{ movie.id }}" {% if selected_movie == movie.id|stringformat:"i" %}selected{% endif %}>{{ movie.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Tìm kiếm theo loại vé -->
+            <div class="col-md-4">
+                <label for="ticket_type" class="form-label">Loại vé</label>
+                <select class="form-select" id="ticket_type" name="ticket_type">
+                    <option value="">Tất cả loại vé</option>
+                    {% for type_code, type_name in ticket_types %}
+                    <option value="{{ type_code }}" {% if selected_ticket_type == type_code %}selected{% endif %}>{{ type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Tìm kiếm theo loại ghế -->
+            <div class="col-md-4">
+                <label for="seat_type" class="form-label">Loại ghế</label>
+                <select class="form-select" id="seat_type" name="seat_type">
+                    <option value="">Tất cả loại ghế</option>
+                    {% for seat in seat_types %}
+                    <option value="{{ seat.id }}" {% if selected_seat_type == seat.id|stringformat:"i" %}selected{% endif %}>{{ seat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Tìm kiếm theo khoảng giá -->
+            <div class="col-md-3">
+                <label for="min_price" class="form-label">Giá thấp nhất</label>
+                <input type="number" class="form-control" id="min_price" name="min_price" value="{{ min_price }}" placeholder="VNĐ">
+            </div>
+            
+            <div class="col-md-3">
+                <label for="max_price" class="form-label">Giá cao nhất</label>
+                <input type="number" class="form-control" id="max_price" name="max_price" value="{{ max_price }}" placeholder="VNĐ">
+            </div>
+            
+            <!-- Tìm kiếm theo ngày chiếu -->
+            <div class="col-md-4">
+                <label for="date" class="form-label">Ngày chiếu</label>
+                <input type="date" class="form-control" id="date" name="date" value="{{ date }}">
+            </div>
+            
+            <!-- Nút tìm kiếm -->
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i>Tìm kiếm</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Hiển thị số lượng kết quả tìm kiếm -->
+{% if request.GET %}
+<div class="mb-3">
+    <p class="text-muted"><i class="fas fa-info-circle me-1"></i>Tìm thấy {{ tickets|length }} kết quả phù hợp.</p>
+    <a href="{% url 'ticket_list' %}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-times-circle me-1"></i>Xóa bộ lọc</a>
+</div>
+{% endif %}
+
+<div class="row">
+    {% for ticket in tickets %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if ticket.movie.image %}
+            <img src="{{ ticket.movie.image.url }}" class="card-img-top" alt="{{ ticket.movie.title }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="bg-light text-center py-5">
+                <i class="fas fa-film fa-3x text-secondary"></i>
+                <p class="mt-2 text-muted">Không có hình ảnh</p>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ ticket.movie.title }}</h5>
+                <p class="card-text"><i class="far fa-clock text-primary me-2"></i><strong>Suất chiếu:</strong> {{ ticket.showtime|date:"d/m/Y H:i" }}</p>
+                <p class="card-text"><i class="fas fa-tag text-primary me-2"></i><strong>Giá vé:</strong> {{ ticket.price }} VNĐ</p>
+                <p class="card-text"><i class="fas fa-ticket-alt text-primary me-2"></i><strong>Loại vé:</strong> {{ ticket.get_type_display }}</p>
+                {% if ticket.seat_type %}
+                <p class="card-text"><i class="fas fa-couch text-primary me-2"></i><strong>Loại ghế:</strong> {{ ticket.seat_type.name }}</p>
+                <p class="card-text"><i class="fas fa-money-bill-wave text-primary me-2"></i><strong>Giá cuối cùng:</strong> {{ ticket.get_final_price }} VNĐ</p>
+                {% endif %}
+                {% if ticket.seat_number %}
+                <p class="card-text"><i class="fas fa-chair text-primary me-2"></i><strong>Số ghế:</strong> {{ ticket.seat_number }}</p>
+                {% endif %}
+                <a href="{% url 'ticket_detail' pk=ticket.pk %}" class="btn btn-info"><i class="fas fa-info-circle me-1"></i>Xem chi tiết</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'ticket_holder_new_for_ticket' ticket_id=ticket.pk %}" class="btn btn-success"><i class="fas fa-shopping-cart me-1"></i>Đặt vé</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            Không có vé nào được tìm thấy.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 

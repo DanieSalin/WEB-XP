@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Admin - Hệ thống đặt vé xem phim{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-tachometer-alt me-2"></i>Dashboard Admin</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'movie_new' %}" class="btn btn-success me-2"><i class="fas fa-film me-1"></i>Thêm phim mới</a>
+            <a href="{% url 'ticket_new' %}" class="btn btn-primary"><i class="fas fa-ticket-alt me-1"></i>Thêm vé mới</a>
+        </div>
+    </div>
+
+    <!-- Thống kê tổng quan -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h2>{{ total_movies }}</h2>
+                    <h5><i class="fas fa-film me-2"></i>Tổng số phim</h5>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="text-white stretched-link" href="{% url 'movie_list' %}">Xem chi tiết</a>
+                    <div class="text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <h2>{{ total_tickets }}</h2>
+                    <h5><i class="fas fa-ticket-alt me-2"></i>Tổng số vé</h5>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="text-white stretched-link" href="{% url 'ticket_list' %}">Xem chi tiết</a>
+                    <div class="text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <h2>{{ total_ticket_holders }}</h2>
+                    <h5><i class="fas fa-shopping-cart me-2"></i>Vé đã đặt</h5>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="text-white stretched-link" href="{% url 'ticket_holder_list' %}">Xem chi tiết</a>
+                    <div class="text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <h2>{{ total_users }}</h2>
+                    <h5><i class="fas fa-users me-2"></i>Tổng số người dùng</h5>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="text-white stretched-link" href="#">Xem chi tiết</a>
+                    <div class="text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Phim phổ biến nhất -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-star me-2"></i>Phim phổ biến nhất</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tên phim</th>
+                                    <th>Đạo diễn</th>
+                                    <th>Thể loại</th>
+                                    <th>Số vé</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for movie in popular_movies %}
+                                <tr>
+                                    <td><a href="{% url 'movie_detail' pk=movie.pk %}">{{ movie.title }}</a></td>
+                                    <td>{{ movie.director }}</td>
+                                    <td>{{ movie.genre }}</td>
+                                    <td>{{ movie.ticket_count }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">Chưa có dữ liệu</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Người dùng đã đặt vé -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0"><i class="fas fa-user-check me-2"></i>Người dùng đã đặt vé</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tên người dùng</th>
+                                    <th>Email</th>
+                                    <th>Số vé đã đặt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users_with_tickets %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.ticket_count }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">Chưa có dữ liệu</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Thống kê theo thể loại phim -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Vé theo thể loại phim</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Thể loại</th>
+                                    <th>Số lượng vé</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for genre in genre_stats %}
+                                <tr>
+                                    <td>{{ genre.genre }}</td>
+                                    <td>{{ genre.count }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Chưa có dữ liệu</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thống kê theo tháng -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-white">
+                    <h3 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Vé đặt theo tháng</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tháng</th>
+                                    <th>Số lượng vé đã đặt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for month in tickets_by_month %}
+                                <tr>
+                                    <td>{{ month.month|date:"F Y" }}</td>
+                                    <td>{{ month.count }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Chưa có dữ liệu</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Thống kê theo loại ghế -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-couch me-2"></i>Thống kê theo loại ghế</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Loại ghế</th>
+                                    <th>Số lượng vé</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for seat in seat_type_stats %}
+                                <tr>
+                                    <td>
+                                        {% if seat.seat_type__name == 'Thường' %}
+                                            <i class="fas fa-chair text-secondary me-2"></i>
+                                        {% elif seat.seat_type__name == 'VIP' %}
+                                            <i class="fas fa-chair text-warning me-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-chair text-muted me-2"></i>
+                                        {% endif %}
+                                        {{ seat.seat_type__name|default:"Chưa xác định" }}
+                                    </td>
+                                    <td>{{ seat.count }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Chưa có dữ liệu</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thống kê doanh thu theo loại ghế -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Doanh thu theo loại ghế</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Loại ghế</th>
+                                    <th>Doanh thu (VNĐ)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for seat in seat_type_revenue %}
+                                <tr>
+                                    <td>
+                                        {% if seat.seat_type__name == 'Thường' %}
+                                            <i class="fas fa-chair text-secondary me-2"></i>
+                                        {% elif seat.seat_type__name == 'VIP' %}
+                                            <i class="fas fa-chair text-warning me-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-chair text-muted me-2"></i>
+                                        {% endif %}
+                                        {{ seat.seat_type__name|default:"Chưa xác định" }}
+                                    </td>
+                                    <td>{{ seat.total_revenue|floatformat:0 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Chưa có dữ liệu</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thống kê theo loại vé -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Thống kê theo loại vé</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Loại vé</th>
+                                    <th>Số lượng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for type in ticket_type_stats %}
+                                <tr>
+                                    <td>
+                                        {% if type.type == 'ADULT' %}
+                                            <i class="fas fa-user me-2"></i>Người lớn
+                                        {% elif type.type == 'CHILD' %}
+                                            <i class="fas fa-child me-2"></i>Trẻ em
+                                        {% else %}
+                                            {{ type.type }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ type.count }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Chưa có dữ liệu</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

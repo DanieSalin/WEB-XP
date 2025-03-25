@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Xác nhận xóa phim - Hệ thống đặt vé xem phim{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-danger text-white">
+        <h3 class="mb-0">Xác nhận xóa</h3>
+    </div>
+    <div class="card-body">
+        <p class="mb-4">Bạn có chắc chắn muốn xóa phim <strong>"{{ movie.title }}"</strong> không?</p>
+        <div class="alert alert-warning">
+            <p><strong>Lưu ý:</strong> Việc xóa phim sẽ đồng thời xóa tất cả các vé đã tạo cho phim này.</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'movie_detail' pk=movie.pk %}" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

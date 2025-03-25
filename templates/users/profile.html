@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Hồ sơ của tôi - Hệ thống đặt vé xem phim{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Hồ sơ của tôi</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Thông tin tài khoản</h5>
+                <hr>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Tên người dùng:</strong>
+                    </div>
+                    <div class="col-md-8">
+                        {{ user.username }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Email:</strong>
+                    </div>
+                    <div class="col-md-8">
+                        {{ user.email|default:"Chưa cung cấp" }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Số điện thoại:</strong>
+                    </div>
+                    <div class="col-md-8">
+                        {{ user.phone_number|default:"Chưa cung cấp" }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Vai trò:</strong>
+                    </div>
+                    <div class="col-md-8">
+                        {{ user.get_role_display }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h2 class="mb-4">Các vé đã đặt</h2>
+        {% if user.ticketholder_set.all %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Phim</th>
+                        <th>Suất chiếu</th>
+                        <th>Giá</th>
+                        <th>Loại vé</th>
+                        <th>Ngày đặt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket_holder in user.ticketholder_set.all %}
+                    <tr>
+                        <td>{{ ticket_holder.ticket.movie.title }}</td>
+                        <td>{{ ticket_holder.ticket.showtime|date:"d/m/Y H:i" }}</td>
+                        <td>{{ ticket_holder.ticket.price }} VNĐ</td>
+                        <td>{{ ticket_holder.get_type_display }}</td>
+                        <td>{{ ticket_holder.created_at|date:"d/m/Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            Bạn chưa đặt vé nào.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
